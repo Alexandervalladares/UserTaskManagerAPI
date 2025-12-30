@@ -1,91 +1,111 @@
-﻿# 🚀 UserTask Manager API
+﻿# UserTaskManagerAPI
 
-Sistema robusto de gestión de usuarios y tareas desarrollado con .NET 8, implementando arquitectura en capas y mejores prácticas de desarrollo.
+**API REST para la gestión de usuarios y tareas** desarrollada en .NET 10 con arquitectura en capas y buenas prácticas de desarrollo.
 
-## 📋 Tabla de Contenidos
+Esta solución cumple todos los requerimientos funcionales y técnicos solicitados en la prueba técnica, incorporando mejoras adicionales como paginación, auditoría de timestamps y manejo consistente de errores.
 
-- [Características](#características)
-- [Tecnologías](#tecnologías)
+---
+
+## Tabla de Contenidos
+
+- [Características Principales](#características-principales)
+- [Tecnologías Utilizadas](#tecnologías-utilizadas)
 - [Requisitos Previos](#requisitos-previos)
 - [Instalación y Ejecución](#instalación-y-ejecución)
+- [Documentación de la API](#documentación-de-la-api)
+- [Endpoints Principales](#endpoints-principales)
 - [Estructura del Proyecto](#estructura-del-proyecto)
-- [Endpoints Disponibles](#endpoints-disponibles)
-- [Base de Datos](#base-de-datos)
+- [Modelo de Base de Datos](#modelo-de-base-de-datos)
 
 ---
 
-## ✨ Características
+## Características Principales
 
 ### Gestión de Usuarios
-- ✅ Crear nuevos usuarios con validación de email único
-- ✅ Consultar detalles de usuario con estadísticas de tareas
-- ✅ Actualizar información de usuario
-- ✅ Eliminar usuarios (con eliminación en cascada de tareas)
+
+- Creación de usuarios con validación de email único
+- Consulta de detalle de usuario con estadísticas de tareas (totales y completadas)
+- Actualización de información del usuario
+- Eliminación de usuario con borrado en cascada de sus tareas
 
 ### Gestión de Tareas
-- ✅ Crear tareas asociadas a usuarios
-- ✅ Listar todas las tareas de un usuario
-- ✅ Actualizar estado de completitud de tareas
-- ✅ Alternar estado completado/pendiente
-- ✅ Eliminar tareas individuales
+
+- Creación de tareas asociadas a un usuario
+- Listado paginado de tareas por usuario
+- Actualización completa de tareas
+- Alternar estado de completitud (completada/pendiente) mediante un endpoint dedicado
+- Eliminación individual de tareas
 
 ### Características Técnicas
-- ✅ Arquitectura en capas (Controllers, Services, Repositories, Data)
-- ✅ Inyección de dependencias
-- ✅ Validación de datos con Data Annotations
-- ✅ Logging estructurado
-- ✅ Manejo de errores centralizado
-- ✅ Documentación automática con Swagger
-- ✅ Soporte completo para Docker
+
+- Arquitectura en capas: Controllers → Services → Repositories → Data
+- Inyección de dependencias
+- Validaciones robustas con Data Annotations y lógica de negocio
+- Logging estructurado
+- Manejo centralizado y consistente de errores
+- Paginación en listados
+- Auditoría automática (`CreatedAt` / `UpdatedAt`)
+- Documentación interactiva con Swagger/OpenAPI
+- Soporte completo para Docker y Docker Compose
 
 ---
 
-## 🛠️ Tecnologías
+## Tecnologías Utilizadas
 
-- **.NET 8** (C#)
-- **Entity Framework Core 8** (ORM)
-- **SQL Server 2022**
-- **Swagger/OpenAPI** (Documentación)
-- **Docker & Docker Compose**
-
----
-
-## 📦 Requisitos Previos
-
-### Para ejecución con Docker (Recomendado):
-- **Docker Desktop** 4.0 o superior
-- **Docker Compose** 2.0 o superior
-
-### Para ejecución local:
-- **.NET 8 SDK**
-- **SQL Server 2022** o **SQL Server 2019**
-- **Visual Studio 2022** o **VS Code** (opcional)
+- .NET 10.0 (LTS)
+- Entity Framework Core
+- SQL Server 2022
+- Swagger / OpenAPI
+- Docker & Docker Compose
 
 ---
 
-## 🚀 Instalación y Ejecución
+## Requisitos Previos
 
-### 🐳 Opción 1: Con Docker (Recomendado)
+### Ejecución con Docker (recomendado)
+
+- Docker Desktop (versión 4.0 o superior)
+- Docker Compose (versión 2.0 o superior)
+
+### Ejecución local (opcional)
+
+- .NET 10 SDK
+- SQL Server 2019 o superior
+- Herramientas de Entity Framework Core (`dotnet-ef`)
+
+---
+
+## Instalación y Ejecución
+
+### Opción 1: Con Docker (recomendado)
+
+1. Clonar el repositorio:
+
 ```bash
-# 1. Clonar el repositorio
-git clone <url-del-repositorio>
+git clone https://github.com/Alexandervalladares/UserTaskManagerAPI.git
 cd UserTaskManagerAPI
-
-# 2. Levantar los servicios con Docker Compose
-docker-compose up --build -d
-
-# 3. Esperar 30-45 segundos para que SQL Server inicialice
-
-# 4. Acceder a la documentación Swagger
-# Abrir navegador en: http://localhost:8080/api-docs
 ```
 
-**Comandos útiles:**
+2. Levantar los servicios:
+
 ```bash
-# Ver logs de la API
+docker-compose up --build -d
+```
+
+La aplicación estará disponible en:
+
+- API Base: `http://localhost:8080`
+- Documentación Swagger: `http://localhost:8080/api-docs`
+
+Las migraciones de base de datos se aplican automáticamente al iniciar el contenedor.
+
+#### Comandos útiles
+
+```bash
+# Ver logs en tiempo real de la API
 docker-compose logs -f api
 
-# Ver logs de SQL Server
+# Ver logs en tiempo real de SQL Server
 docker-compose logs -f sqlserver
 
 # Detener los servicios
@@ -95,81 +115,89 @@ docker-compose down
 docker-compose down -v
 ```
 
----
+### Opción 2: Ejecución Local sin Docker
 
-### 💻 Opción 2: Ejecución Local (Sin Docker)
+1. Configurar la cadena de conexión en `appsettings.Development.json`:
 
-#### Paso 1: Configurar SQL Server
-
-Actualiza la cadena de conexión en `appsettings.json`:
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=localhost;Database=UserTaskDatabase;User Id=tu_usuario;Password=tu_password;TrustServerCertificate=True;"
+    "DefaultConnection": "Server=localhost;Database=UserTaskDatabase;Trusted_Connection=True;TrustServerCertificate=True;MultipleActiveResultSets=true"
   }
 }
 ```
 
-#### Paso 2: Instalar herramientas de Entity Framework
-```bash
-dotnet tool install --global dotnet-ef --version 8.0.0
-```
+2. Aplicar migraciones a la base de datos:
 
-#### Paso 3: Crear la base de datos
 ```bash
-# Crear la migración inicial (si no existe)
-dotnet ef migrations add InitialCreate
-
-# Aplicar las migraciones
 dotnet ef database update
 ```
 
-#### Paso 4: Ejecutar la aplicación
+3. Ejecutar la aplicación:
+
 ```bash
-# Restaurar dependencias
-dotnet restore
-
-# Compilar el proyecto
-dotnet build
-
-# Ejecutar la aplicación
 dotnet run
 ```
 
-**La API estará disponible en:**
-- API Base: `http://localhost:5000`
-- Swagger UI: `http://localhost:5000/api-docs`
+La API estará disponible en el puerto indicado en la consola (generalmente `https://localhost:7xxx`) y la documentación en `/api-docs`.
 
 ---
 
-## 📁 Estructura del Proyecto
+## Documentación de la API
+
+La documentación completa e interactiva se genera automáticamente mediante Swagger UI y está disponible en:
+
+**`http://localhost:8080/api-docs`**
+
+Desde Swagger puedes:
+
+- Visualizar todos los endpoints disponibles
+- Probar las operaciones directamente en el navegador
+- Consultar esquemas detallados de request y response
+- Explorar parámetros de paginación (page, pageSize)
+
+---
+
+## Endpoints Principales
+
+### Usuarios (`/api/user`)
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| `POST` | `/api/user` | Crear nuevo usuario |
+| `GET` | `/api/user?page=&pageSize=` | Listar usuarios (paginado) |
+| `GET` | `/api/user/{id}` | Detalle de usuario con estadísticas |
+| `PUT` | `/api/user/{id}` | Actualizar usuario |
+| `DELETE` | `/api/user/{id}` | Eliminar usuario y sus tareas |
+
+### Tareas (`/api/task`)
+
+| Método | Endpoint | Descripción |
+|--------|----------|-------------|
+| `POST` | `/api/task/user/{userId}` | Crear tarea para un usuario |
+| `GET` | `/api/task/user/{userId}?page=&pageSize=` | Listar tareas del usuario (paginado) |
+| `GET` | `/api/task/{id}` | Detalle de tarea |
+| `PUT` | `/api/task/{id}` | Actualizar tarea completa |
+| `PATCH` | `/api/task/{id}/complete` | Alternar estado completado/pendiente |
+| `DELETE` | `/api/task/{id}` | Eliminar tarea |
+
+---
+
+## Estructura del Proyecto
+
 ```
 UserTaskManagerAPI/
-├── Controllers/              # Endpoints REST
-│   ├── UserController.cs
-│   └── TaskController.cs
-├── Services/                 # Lógica de negocio
-│   ├── IUserService.cs
-│   ├── UserService.cs
-│   ├── ITaskService.cs
-│   └── TaskService.cs
-├── Repositories/             # Acceso a datos
-│   ├── IUserRepository.cs
-│   ├── UserRepository.cs
-│   ├── ITaskRepository.cs
-│   └── TaskRepository.cs
-├── Data/                     # Contexto de base de datos
-│   └── ApplicationDbContext.cs
-├── Models/                   # Entidades y DTOs
-│   ├── Entities/
-│   │   ├── UserEntity.cs
-│   │   └── TaskEntity.cs
-│   └── DTOs/
-│       ├── UserDTOs.cs
-│       └── TaskDTOs.cs
-├── Migrations/               # Migraciones de EF Core
-├── Program.cs                # Configuración principal
-├── appsettings.json          # Configuración
+├── Controllers/          # Endpoints REST
+├── Services/             # Lógica de negocio e interfaces
+├── Repositories/         # Acceso a datos
+├── Data/                 # DbContext y configuración EF
+├── Models/
+│   ├── Entities/         # Entidades de dominio
+│   ├── DTOs/             # Objetos de transferencia
+│   └── Pagination/       # Clases para paginación
+├── Migrations/           # Migraciones de Entity Framework
+├── Program.cs            # Configuración de la aplicación
+├── appsettings.json      # Configuración
 ├── Dockerfile
 ├── docker-compose.yml
 └── README.md
@@ -177,149 +205,53 @@ UserTaskManagerAPI/
 
 ---
 
-## 🌐 Endpoints Disponibles
+## Modelo de Base de Datos
 
-### 👤 Usuarios (`/api/user`)
+La base de datos consta de dos tablas principales con la siguiente estructura:
 
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| POST | `/api/user` | Crear un nuevo usuario |
-| GET | `/api/user/{id}` | Obtener detalles de un usuario |
-| GET | `/api/user` | Listar todos los usuarios |
-| PUT | `/api/user/{id}` | Actualizar información del usuario |
-| DELETE | `/api/user/{id}` | Eliminar un usuario |
+### Tabla Users
 
-### 📋 Tareas (`/api/task`)
+- `UserId` (int, PK, Identity)
+- `FullName` (nvarchar(200), NOT NULL)
+- `EmailAddress` (nvarchar(150), NOT NULL, UNIQUE)
+- `RegistrationDate` (datetime2, NOT NULL) – Fecha de creación del usuario
+- `UpdatedAt` (datetime2, NULL) – Fecha de la última actualización del usuario
 
-| Método | Endpoint | Descripción |
-|--------|----------|-------------|
-| POST | `/api/task/user/{userId}` | Crear tarea para un usuario |
-| GET | `/api/task/{id}` | Obtener detalles de una tarea |
-| GET | `/api/task/user/{userId}` | Obtener todas las tareas de un usuario |
-| PUT | `/api/task/{id}` | Actualizar una tarea |
-| PATCH | `/api/task/{id}/complete` | Alternar estado de completitud |
-| DELETE | `/api/task/{id}` | Eliminar una tarea |
+### Tabla Tasks
 
----
+- `TaskId` (int, PK, Identity)
+- `TaskDescription` (nvarchar(500), NOT NULL)
+- `IsCompleted` (bit, NOT NULL, DEFAULT 0)
+- `CreationDate` (datetime2, NOT NULL) – Fecha de creación de la tarea
+- `UpdatedAt` (datetime2, NULL) – Fecha de la última actualización de la tarea
+- `CompletionDate` (datetime2, NULL) – Fecha en que se marcó como completada (solo cuando IsCompleted = true)
+- `UserId` (int, FK → Users(UserId), NOT NULL)
 
-## 📚 Documentación Swagger
+### Relaciones
 
-Accede a la documentación interactiva en: **`http://localhost:8080/api-docs`**
-
-Desde Swagger puedes:
-- Ver todos los endpoints disponibles
-- Probar las peticiones directamente
-- Ver los esquemas de request/response
-- Consultar códigos de estado HTTP
+- **Tipo:** Uno a muchos (un usuario puede tener múltiples tareas)
+- **Comportamiento en borrado:** Eliminación en cascada – al eliminar un usuario, se eliminan automátamente todas sus tareas asociadas
 
 ---
 
-## 🗄️ Base de Datos
+## Principios de Desarrollo
 
-### Modelo de Datos
+El proyecto sigue principios SOLID, estándares RESTful y mejores prácticas de .NET, priorizando:
 
-**Tabla: Users**
-
-| Campo | Tipo | Restricciones |
-|-------|------|---------------|
-| UserId | int | PRIMARY KEY, IDENTITY |
-| FullName | nvarchar(200) | NOT NULL |
-| EmailAddress | nvarchar(150) | NOT NULL, UNIQUE |
-| RegistrationDate | datetime2 | NOT NULL |
-
-**Tabla: Tasks**
-
-| Campo | Tipo | Restricciones |
-|-------|------|---------------|
-| TaskId | int | PRIMARY KEY, IDENTITY |
-| TaskDescription | nvarchar(500) | NOT NULL |
-| IsCompleted | bit | NOT NULL, DEFAULT 0 |
-| CreationDate | datetime2 | NOT NULL |
-| CompletionDate | datetime2 | NULL |
-| UserId | int | FOREIGN KEY → Users(UserId) |
-
-**Relación:** Un usuario puede tener múltiples tareas (1:N). Al eliminar un usuario, se eliminan todas sus tareas en cascada.
+- Mantenibilidad del código
+- Escalabilidad de la arquitectura
+- Claridad y legibilidad
+- Separación de responsabilidades
+- Inyección de dependencias
 
 ---
 
-## 🧪 Ejemplos de Uso
+## Autor
 
-### Crear Usuario
-```bash
-curl -X POST http://localhost:8080/api/user \
-  -H "Content-Type: application/json" \
-  -d '{
-    "fullName": "María González",
-    "emailAddress": "maria.gonzalez@empresa.com"
-  }'
-```
-
-### Crear Tarea
-```bash
-curl -X POST http://localhost:8080/api/task/user/1 \
-  -H "Content-Type: application/json" \
-  -d '{
-    "taskDescription": "Revisar documentación del proyecto"
-  }'
-```
-
-### Marcar Tarea como Completada
-```bash
-curl -X PATCH http://localhost:8080/api/task/1/complete
-```
-
-### Listar Tareas de un Usuario
-```bash
-curl -X GET http://localhost:8080/api/task/user/1
-```
+Alexander Valladares
 
 ---
 
-## 🐛 Solución de Problemas
+## Licencia
 
-### Error: "No se puede conectar a SQL Server"
-
-**Con Docker:**
-```bash
-# Verificar estado de contenedores
-docker-compose ps
-
-# Ver logs de SQL Server
-docker-compose logs sqlserver
-
-# Reiniciar servicios
-docker-compose restart
-```
-
-**Sin Docker:**
-- Verifica que SQL Server esté corriendo
-- Comprueba las credenciales en `appsettings.json`
-
-### Puerto ya en uso
-
-Edita `docker-compose.yml` y cambia el puerto:
-```yaml
-ports:
-  - "8081:8080"  # Cambiar 8080 por otro puerto disponible
-```
-
----
-
-## 👨‍💻 Desarrollo
-
-Este proyecto fue desarrollado siguiendo:
-- Principios SOLID
-- Clean Architecture
-- Mejores prácticas de .NET
-- Estándares RESTful
-- Código limpio y bien documentado
-
----
-
-## 📄 Licencia
-
-Proyecto desarrollado como prueba técnica - Uso educativo y demostrativo.
-
----
-
-**✨ ¡Gracias por revisar este proyecto!**
+Este proyecto fue desarrollado como parte de una prueba técnica.
