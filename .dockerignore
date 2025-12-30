@@ -1,0 +1,12 @@
+bin/
+obj/
+**/*.user
+**/*.vspscc
+**/*.suo
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+bld/
+[Bb]in/
+[Oo]bj/
